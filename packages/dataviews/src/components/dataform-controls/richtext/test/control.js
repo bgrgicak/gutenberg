@@ -12,7 +12,7 @@ import { unregisterFormatType, registerFormatType } from '@wordpress/rich-text';
  * Internal dependencies
  */
 import RichTextControl from '../control';
-import { unlock } from '../lock-unlock';
+import { unlock } from '../../../../lock-unlock';
 
 function getTextbox( container ) {
 	return container.querySelector( '.wp-rich-text-control' );

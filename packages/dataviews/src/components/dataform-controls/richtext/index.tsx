@@ -1,16 +1,41 @@
 /**
+ * External dependencies
+ */
+import type { ComponentType } from 'react';
+
+/**
  * WordPress dependencies
  */
-// @ts-ignore — `@wordpress/rich-text-control` ships no `.d.ts` files, so the
-// type-declaration build cannot resolve this import even though the package
-// is declared as a dependency.
-import { RichTextControl } from '@wordpress/rich-text-control';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import type { DataFormControlProps } from '../../types';
+import RichTextControlAssembly from './control';
+import type { DataFormControlProps } from '../../../types';
+
+type RichTextControlProps = {
+	label: string;
+	value: string;
+	onChange: ( value: string ) => void;
+	placeholder?: string;
+	id?: string;
+	hideLabelFromVision?: boolean;
+	className?: string;
+	clientId?: string;
+	allowedFormats?: string[];
+	disableFormats?: boolean;
+	withoutInteractiveFormatting?: boolean;
+	preserveWhiteSpace?: boolean;
+	disableLineBreaks?: boolean;
+};
+
+// `./control` is the untyped rich-text "assembly": it wires `@wordpress/rich-text`
+// to the presentational `RichTextControl` shell from `@wordpress/components`. Its
+// JSDoc `@return {Element}` resolves to the DOM `Element`, so cast it to a React
+// component to consume it as JSX with a typed prop contract here.
+const RichTextControl =
+	RichTextControlAssembly as unknown as ComponentType< RichTextControlProps >;
 
 export default function RichText< Item >( {
 	data,
