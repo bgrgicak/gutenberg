@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### New Components
+
+-   `RichTextControl` (private): Add a presentational rich text control shell — `BaseControl` + label, a `contentEditable` element, and the format popover slot scaffolding — decoupled from `@wordpress/rich-text`. The editable wiring is injected by the consumer via `editableRef` and `children`, and selection is controlled via `onSelectedChange` ([#79345](https://github.com/WordPress/gutenberg/pull/79345)).
+
 ### Enhancements
 
 -   `BaseControl`: Apply `text-wrap: pretty` to help text to avoid typographic widows ([#79112](https://github.com/WordPress/gutenberg/pull/79112)).

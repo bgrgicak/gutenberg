@@ -8,7 +8,7 @@
 
 ### New Features
 
-- DataForms: Add a `richtext` control, backed by `@wordpress/rich-text-control`, selectable via `Edit: 'richtext'` (or an `EditConfig` with `control: 'richtext'`). [#78471](https://github.com/WordPress/gutenberg/pull/78471)
+- DataForms: Add a `richtext` control, selectable via `Edit: 'richtext'` (or an `EditConfig` with `control: 'richtext'`). It is assembled in-package from `@wordpress/rich-text` and the presentational `RichTextControl` shell in `@wordpress/components`. [#78471](https://github.com/WordPress/gutenberg/pull/78471) [#79345](https://github.com/WordPress/gutenberg/pull/79345)
 
 ### Bug Fix
 
