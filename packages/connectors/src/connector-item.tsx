@@ -197,7 +197,6 @@ export function DefaultConnectorSettings( {
 			}
 		>
 			<TextControl
-				__next40pxDefaultSize
 				label={ __( 'API Key' ) }
 				value={ apiKey }
 				onChange={ ( value ) => {
@@ -342,7 +341,6 @@ export function ApplicationPasswordConnectorSettings( {
 			}
 		>
 			<TextControl
-				__next40pxDefaultSize
 				label={ __( 'Username' ) }
 				value={ username }
 				onChange={ ( value ) => {
@@ -356,7 +354,6 @@ export function ApplicationPasswordConnectorSettings( {
 				autoComplete="username"
 			/>
 			<TextControl
-				__next40pxDefaultSize
 				label={ __( 'Application password' ) }
 				value={ readOnly ? '••••••••••••••••' : applicationPassword }
 				onChange={ ( value ) => {
