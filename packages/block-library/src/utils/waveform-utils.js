@@ -14,6 +14,7 @@ import WaveformPlayerLib from '@arraypress/waveform-player';
  * Note: DEFAULT_WAVEFORM_HEIGHT should match $waveform-player-height in style.scss.
  */
 const DEFAULT_WAVEFORM_HEIGHT = 100;
+const DEFAULT_WAVEFORM_BACKGROUND_COLOR = '#ffffff';
 
 /**
  * Get computed style for an element, using ownerDocument for iframe compatibility.
@@ -35,23 +36,38 @@ export function getWaveformColors( element ) {
 	const textColor = getComputedStyle( element ).color;
 	const waveformColor = colord( textColor ).alpha( 0.3 ).toRgbString();
 	const progressColor = colord( textColor ).alpha( 0.6 ).toRgbString();
+	let backgroundColor = getComputedStyle( element ).backgroundColor;
+	let backgroundNode = element.parentElement;
 
-	return { textColor, waveformColor, progressColor };
+	while (
+		colord( backgroundColor ).alpha() === 0 &&
+		backgroundNode instanceof element.ownerDocument.defaultView.Element
+	) {
+		backgroundColor = getComputedStyle( backgroundNode ).backgroundColor;
+		backgroundNode = backgroundNode.parentElement;
+	}
+
+	if ( colord( backgroundColor ).alpha() === 0 ) {
+		backgroundColor = DEFAULT_WAVEFORM_BACKGROUND_COLOR;
+	}
+
+	return { textColor, waveformColor, progressColor, backgroundColor };
 }
 
 /**
  * Create a waveform container element with the specified attributes.
  *
- * @param {Object} options               - The options for the container.
- * @param {string} options.url           - The audio URL.
- * @param {string} options.title         - The track title.
- * @param {string} options.artist        - The track artist.
- * @param {string} options.artwork       - The album artwork URL.
- * @param {string} options.waveformColor - The waveform bar color.
- * @param {string} options.progressColor - The progress indicator color.
- * @param {string} options.buttonColor   - The play button color.
- * @param {number} options.height        - The waveform height in pixels.
- * @param {string} options.waveformStyle - The visualization style (bars, mirror, line, blocks, dots, seekbar).
+ * @param {Object} options                 - The options for the container.
+ * @param {string} options.url             - The audio URL.
+ * @param {string} options.title           - The track title.
+ * @param {string} options.artist          - The track artist.
+ * @param {string} options.artwork         - The album artwork URL.
+ * @param {string} options.waveformColor   - The waveform bar color.
+ * @param {string} options.progressColor   - The progress indicator color.
+ * @param {string} options.buttonColor     - The play button color.
+ * @param {string} options.backgroundColor - The waveform background color.
+ * @param {number} options.height          - The waveform height in pixels.
+ * @param {string} options.waveformStyle   - The visualization style (bars, mirror, line, blocks, dots, seekbar).
  * @return {Element} The configured container element.
  */
 export function createWaveformContainer( {
@@ -62,6 +78,7 @@ export function createWaveformContainer( {
 	waveformColor,
 	progressColor,
 	buttonColor,
+	backgroundColor = DEFAULT_WAVEFORM_BACKGROUND_COLOR,
 	height = DEFAULT_WAVEFORM_HEIGHT,
 	waveformStyle = 'bars',
 } ) {
@@ -73,8 +90,13 @@ export function createWaveformContainer( {
 	container.setAttribute( 'data-waveform-color', waveformColor );
 	container.setAttribute( 'data-progress-color', progressColor );
 	container.setAttribute( 'data-button-color', buttonColor );
+	container.setAttribute( 'data-background-color', backgroundColor );
 	container.setAttribute( 'data-text-color', buttonColor );
 	container.setAttribute( 'data-text-secondary-color', buttonColor );
+	container.style.setProperty(
+		'--wp--playlist--waveform-background-color',
+		backgroundColor
+	);
 	if ( title ) {
 		container.setAttribute( 'data-title', title );
 	}
@@ -177,7 +199,7 @@ export function initWaveformPlayer(
 	{ src, title, artist, image, autoPlay, onEnded, labels, waveformStyle }
 ) {
 	// Get colors from computed styles.
-	const { textColor, waveformColor, progressColor } =
+	const { textColor, waveformColor, progressColor, backgroundColor } =
 		getWaveformColors( element );
 
 	// Create the waveform container.
@@ -189,6 +211,7 @@ export function initWaveformPlayer(
 		waveformColor,
 		progressColor,
 		buttonColor: textColor,
+		backgroundColor,
 		waveformStyle,
 	} );
 	element.appendChild( container );
