@@ -30,10 +30,12 @@ function getComputedStyle( element ) {
  * Get all colors needed for the waveform player based on the element's styles.
  *
  * @param {Element} element - The element to derive colors from.
- * @return {Object} Object containing textColor, waveformColor, progressColor.
+ * @return {Object} Object containing textColor, buttonColor, iconColor, waveformColor, progressColor, backgroundColor.
  */
 export function getWaveformColors( element ) {
 	const textColor = getComputedStyle( element ).color;
+	const buttonColor = textColor;
+	const iconColor = colord( buttonColor ).isDark() ? '#ffffff' : '#000000';
 	const waveformColor = colord( textColor ).alpha( 0.3 ).toRgbString();
 	const progressColor = colord( textColor ).alpha( 0.6 ).toRgbString();
 	let backgroundColor = getComputedStyle( element ).backgroundColor;
@@ -51,7 +53,14 @@ export function getWaveformColors( element ) {
 		backgroundColor = DEFAULT_WAVEFORM_BACKGROUND_COLOR;
 	}
 
-	return { textColor, waveformColor, progressColor, backgroundColor };
+	return {
+		textColor,
+		buttonColor,
+		waveformColor,
+		progressColor,
+		backgroundColor,
+		iconColor,
+	};
 }
 
 /**
@@ -65,6 +74,8 @@ export function getWaveformColors( element ) {
  * @param {string} options.waveformColor   - The waveform bar color.
  * @param {string} options.progressColor   - The progress indicator color.
  * @param {string} options.buttonColor     - The play button color.
+ * @param {string} options.textColor       - The primary text color.
+ * @param {string} options.iconColor       - The play/pause icon color.
  * @param {string} options.backgroundColor - The waveform background color.
  * @param {number} options.height          - The waveform height in pixels.
  * @param {string} options.waveformStyle   - The visualization style (bars, mirror, line, blocks, dots, seekbar).
@@ -78,6 +89,8 @@ export function createWaveformContainer( {
 	waveformColor,
 	progressColor,
 	buttonColor,
+	textColor,
+	iconColor,
 	backgroundColor = DEFAULT_WAVEFORM_BACKGROUND_COLOR,
 	height = DEFAULT_WAVEFORM_HEIGHT,
 	waveformStyle = 'bars',
@@ -90,12 +103,25 @@ export function createWaveformContainer( {
 	container.setAttribute( 'data-waveform-color', waveformColor );
 	container.setAttribute( 'data-progress-color', progressColor );
 	container.setAttribute( 'data-button-color', buttonColor );
+	container.setAttribute( 'data-icon-color', iconColor );
 	container.setAttribute( 'data-background-color', backgroundColor );
-	container.setAttribute( 'data-text-color', buttonColor );
+	container.setAttribute( 'data-text-color', textColor );
 	container.setAttribute( 'data-text-secondary-color', buttonColor );
 	container.style.setProperty(
 		'--wp--playlist--waveform-background-color',
 		backgroundColor
+	);
+	container.style.setProperty(
+		'--wp--playlist--waveform-bar-color',
+		waveformColor
+	);
+	container.style.setProperty(
+		'--wp--playlist--waveform-button-background-color',
+		buttonColor
+	);
+	container.style.setProperty(
+		'--wp--playlist--waveform-button-icon-color',
+		iconColor
 	);
 	if ( title ) {
 		container.setAttribute( 'data-title', title );
@@ -113,14 +139,11 @@ export function createWaveformContainer( {
  * Apply contrasting color to SVG icon paths for visibility.
  * The icons should contrast with the button background (which uses textColor).
  *
- * @param {Element} container   - The waveform container element.
- * @param {string}  buttonColor - The button background color (textColor).
+ * @param {Object}  options           - The options.
+ * @param {Element} options.container - The waveform container element.
+ * @param {string}  options.iconColor - The color to apply to the icon paths.
  */
-export function styleSvgIcons( container, buttonColor ) {
-	// Compute a contrasting color for the icons based on button brightness.
-	const isButtonDark = colord( buttonColor ).isDark();
-	const iconColor = isButtonDark ? '#ffffff' : '#000000';
-
+export function styleSvgIcons( { container, iconColor } ) {
 	const svgPaths = container.querySelectorAll( 'svg path' );
 	svgPaths.forEach( ( path ) => {
 		path.style.fill = iconColor;
@@ -199,8 +222,14 @@ export function initWaveformPlayer(
 	{ src, title, artist, image, autoPlay, onEnded, labels, waveformStyle }
 ) {
 	// Get colors from computed styles.
-	const { textColor, waveformColor, progressColor, backgroundColor } =
-		getWaveformColors( element );
+	const {
+		buttonColor,
+		iconColor,
+		textColor,
+		waveformColor,
+		progressColor,
+		backgroundColor,
+	} = getWaveformColors( element );
 
 	// Create the waveform container.
 	const container = createWaveformContainer( {
@@ -210,7 +239,9 @@ export function initWaveformPlayer(
 		artwork: image,
 		waveformColor,
 		progressColor,
-		buttonColor: textColor,
+		buttonColor,
+		iconColor,
+		textColor,
 		backgroundColor,
 		waveformStyle,
 	} );
@@ -223,7 +254,7 @@ export function initWaveformPlayer(
 	let cleanupAccessibility;
 	const handlers = {
 		ready: () => {
-			styleSvgIcons( container, textColor );
+			styleSvgIcons( { container, iconColor } );
 			cleanupAccessibility = setupPlayButtonAccessibility(
 				container,
 				labels

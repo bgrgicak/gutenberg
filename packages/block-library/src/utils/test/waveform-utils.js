@@ -20,6 +20,8 @@ const basePlayerData = {
 	waveformColor: 'rgba(0, 0, 0, 0.3)',
 	progressColor: 'rgba(0, 0, 0, 0.6)',
 	buttonColor: '#000000',
+	textColor: '#000000',
+	iconColor: '#ffffff',
 	backgroundColor: '#ffffff',
 };
 
@@ -56,7 +58,9 @@ describe( 'Waveform utilities', () => {
 				'#ffffff'
 			);
 			expect( container ).toHaveStyle( {
-				'--wp--playlist--waveform-background-color': '#ffffff',
+				'--wp--playlist--waveform-bar-color': 'rgba(0, 0, 0, 0.3)',
+				'--wp--playlist--waveform-button-background-color': '#000000',
+				'--wp--playlist--waveform-button-icon-color': '#ffffff',
 			} );
 		} );
 
@@ -106,10 +110,32 @@ describe( 'Waveform utilities', () => {
 
 			expect( getWaveformColors( element ) ).toEqual( {
 				textColor: 'rgb(0, 0, 0)',
+				buttonColor: 'rgb(0, 0, 0)',
 				waveformColor: 'rgba(0, 0, 0, 0.3)',
 				progressColor: 'rgba(0, 0, 0, 0.6)',
 				backgroundColor: 'rgb(255, 255, 255)',
+				iconColor: '#ffffff',
 			} );
+
+			element.remove();
+		} );
+
+		it( 'should derive a white icon color for dark text', () => {
+			const element = document.createElement( 'div' );
+			element.style.color = '#000080';
+			document.body.appendChild( element );
+
+			expect( getWaveformColors( element ).iconColor ).toBe( '#ffffff' );
+
+			element.remove();
+		} );
+
+		it( 'should derive a black icon color for light text', () => {
+			const element = document.createElement( 'div' );
+			element.style.color = '#ffff00';
+			document.body.appendChild( element );
+
+			expect( getWaveformColors( element ).iconColor ).toBe( '#000000' );
 
 			element.remove();
 		} );
@@ -130,7 +156,7 @@ describe( 'Waveform utilities', () => {
 	} );
 
 	describe( 'styleSvgIcons', () => {
-		it( 'should set white fill for dark button colors', () => {
+		it( 'should apply the icon color as the SVG path fill', () => {
 			const container = document.createElement( 'div' );
 			const svg = document.createElementNS(
 				'http://www.w3.org/2000/svg',
@@ -143,12 +169,12 @@ describe( 'Waveform utilities', () => {
 			svg.appendChild( path );
 			container.appendChild( svg );
 
-			styleSvgIcons( container, '#000000' );
+			styleSvgIcons( { container, iconColor: '#ffffff' } );
 
 			expect( path ).toHaveStyle( { fill: '#ffffff' } );
 		} );
 
-		it( 'should set black fill for light button colors', () => {
+		it( 'should apply a dark icon color as the SVG path fill', () => {
 			const container = document.createElement( 'div' );
 			const svg = document.createElementNS(
 				'http://www.w3.org/2000/svg',
@@ -161,7 +187,7 @@ describe( 'Waveform utilities', () => {
 			svg.appendChild( path );
 			container.appendChild( svg );
 
-			styleSvgIcons( container, '#ffffff' );
+			styleSvgIcons( { container, iconColor: '#000000' } );
 
 			expect( path ).toHaveStyle( { fill: '#000000' } );
 		} );
@@ -184,7 +210,7 @@ describe( 'Waveform utilities', () => {
 			svg.appendChild( path2 );
 			container.appendChild( svg );
 
-			styleSvgIcons( container, '#000000' );
+			styleSvgIcons( { container, iconColor: '#ffffff' } );
 
 			expect( path1 ).toHaveStyle( { fill: '#ffffff' } );
 			expect( path2 ).toHaveStyle( { fill: '#ffffff' } );
@@ -195,46 +221,8 @@ describe( 'Waveform utilities', () => {
 
 			// Should not throw.
 			expect( () => {
-				styleSvgIcons( container, '#000000' );
+				styleSvgIcons( { container, iconColor: '#000000' } );
 			} ).not.toThrow();
-		} );
-
-		it( 'should use white for dark colors', () => {
-			const container = document.createElement( 'div' );
-			const svg = document.createElementNS(
-				'http://www.w3.org/2000/svg',
-				'svg'
-			);
-			const path = document.createElementNS(
-				'http://www.w3.org/2000/svg',
-				'path'
-			);
-			svg.appendChild( path );
-			container.appendChild( svg );
-
-			// A dark blue color.
-			styleSvgIcons( container, '#000080' );
-
-			expect( path ).toHaveStyle( { fill: '#ffffff' } );
-		} );
-
-		it( 'should use black for mid-light colors', () => {
-			const container = document.createElement( 'div' );
-			const svg = document.createElementNS(
-				'http://www.w3.org/2000/svg',
-				'svg'
-			);
-			const path = document.createElementNS(
-				'http://www.w3.org/2000/svg',
-				'path'
-			);
-			svg.appendChild( path );
-			container.appendChild( svg );
-
-			// A light yellow color.
-			styleSvgIcons( container, '#ffff00' );
-
-			expect( path ).toHaveStyle( { fill: '#000000' } );
 		} );
 	} );
 
