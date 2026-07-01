@@ -17,6 +17,7 @@
 
 ### Enhancements
 
+-   `Button`: Align focus rings with the design system ([#78646](https://github.com/WordPress/gutenberg/pull/78646)).
 -   The `size` prop no longer has any effect and can be safely removed from the following:
     -   `BorderBoxControl` ([#79420](https://github.com/WordPress/gutenberg/pull/79420))
     -   `BorderControl` ([#79418](https://github.com/WordPress/gutenberg/pull/79418))
