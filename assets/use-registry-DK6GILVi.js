@@ -1,0 +1,1 @@
+import{d as r}from"./index-CNjrNKsX.js";import{r as e}from"./iframe-CIEUap3n.js";var t=e.createContext(r);t.displayName="RegistryProviderContext";var{Consumer:s,Provider:o}=t,i=o;function useRegistry(){return e.useContext(t)}export{i as c,useRegistry as u};
